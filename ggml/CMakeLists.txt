@@ -189,6 +189,7 @@ option(GGML_WEBGPU                          "ggml: use WebGPU"                  
 option(GGML_WEBGPU_DEBUG                    "ggml: enable WebGPU debug output"                OFF)
 option(GGML_ZDNN                            "ggml: use zDNN"                                  OFF)
 option(GGML_REMOTING_FRONTEND               "ggml: use the API Remoting frontend"             OFF)
+option(GGML_REMOTING_BACKEND                "ggml: use the API Remoting backend"              OFF)
 option(GGML_METAL                           "ggml: use Metal"                                 ${GGML_METAL_DEFAULT})
 option(GGML_METAL_USE_BF16                  "ggml: use bfloat if available"                   OFF)
 option(GGML_METAL_NDEBUG                    "ggml: disable Metal debugging"                   OFF)
@@ -280,6 +281,7 @@ set(GGML_PUBLIC_HEADERS
     include/ggml-vulkan.h
     include/ggml-webgpu.h
     ggml/include/ggml-remoting-frontend.h
+    ggml/include/ggml-remoting-backend.h
     include/gguf.h)
 
 set_target_properties(ggml PROPERTIES PUBLIC_HEADER "${GGML_PUBLIC_HEADERS}")
