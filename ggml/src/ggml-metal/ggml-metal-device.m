@@ -333,9 +333,9 @@ ggml_metal_pipeline_t ggml_metal_library_compile_pipeline(ggml_metal_library_t l
         NSError * error = nil;
 
         NSString * base_func = [NSString stringWithUTF8String:base];
-
+#if 0
         GGML_LOG_DEBUG("%s: compiling pipeline: base = '%s', name = '%s'\n", __func__, base, name);
-
+#endif
         id<MTLFunction> mtl_function;
         if (!cv) {
             mtl_function = [lib->obj newFunctionWithName:base_func];
@@ -358,10 +358,11 @@ ggml_metal_pipeline_t ggml_metal_library_compile_pipeline(ggml_metal_library_t l
         ggml_metal_pipelines_add(lib->pipelines, name, res);
 
         [mtl_function release];
-
+#if 0
         GGML_LOG_DEBUG("%s: loaded %-40s %16p | th_max = %4d | th_width = %4d\n", __func__, name, (void *) res->obj,
                 (int) res->obj.maxTotalThreadsPerThreadgroup,
                 (int) res->obj.threadExecutionWidth);
+#endif
     }
 
     ggml_critical_section_end();
