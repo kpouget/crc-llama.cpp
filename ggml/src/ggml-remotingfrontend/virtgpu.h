@@ -38,8 +38,6 @@ enum virgl_renderer_capset {
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-#define VN_DEBUG(what) true
-
 typedef enum virt_gpu_result_t {
   APIR_SUCCESS = 0,
   APIR_ERROR_INITIALIZATION_FAILED = -1,

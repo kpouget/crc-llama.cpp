@@ -42,17 +42,7 @@ static void ggml_backend_remoting_buffer_set_tensor(ggml_backend_buffer_t buffer
   start_timer(&set_tensor_timer);
 
   struct virtgpu *gpu = BUFFER_TO_GPU(buffer);
-#if 0
-  INFO("%s: data=%p, offset=%lu, size=%lu\n", __func__, data, offset, size);
-#endif
-#if 0
-  void **addr = (void **)(uintptr_t)data;
-  for (int i = 0; i <= 10; i++) {
-    INFO("%s: %p | %llx", __func__, addr, *addr);
-    addr++;
-  }
-  INFO("\n");
-#endif
+
   struct ggml_backend_remoting_buffer_context *context = BUFFER_TO_GGML_CONTEXT(buffer);
   if (context->is_from_ptr) {
     memcpy((char *)tensor->data + offset, data, size);

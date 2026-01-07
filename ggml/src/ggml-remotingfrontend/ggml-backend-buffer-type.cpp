@@ -1,8 +1,5 @@
 #include "ggml-remoting.h"
 
-#define BUFT_TO_GPU(name) \
-  ((struct ggml_backend_remoting_device_context *) (name)->device->context)->gpu
-
 static ggml_backend_buffer_t
 ggml_backend_remoting_buffer_type_alloc_buffer(ggml_backend_buffer_type_t buft, size_t size) {
   IMPLEMENTED_ONCE;

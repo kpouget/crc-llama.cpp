@@ -36,6 +36,9 @@
 #define GET_DEVICE_CONTEXT() \
   (struct ggml_backend_remoting_device_context *) ggml_backend_remoting_get_device(0)->context
 
+#define BUFT_TO_GPU(name) \
+  ((struct ggml_backend_remoting_device_context *) (name)->device->context)->gpu
+
 static inline apir_buffer_type_host_handle_t
 ggml_buffer_type_to_apir_handle(ggml_backend_buffer_type_t buft) {
   // in the backend, the buffer handle is the buffer pointer

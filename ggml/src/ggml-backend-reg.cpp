@@ -204,7 +204,7 @@ struct ggml_backend_registry {
     if (getenv("GGML_DISABLE_VULKAN") == nullptr) {
         register_backend(ggml_backend_vk_reg());
     } else {
-        GGML_LOG_DEBUG("Vulkan backend disabled by GGML_DISABLE_VULKAN environment variable");
+        GGML_LOG_DEBUG("Vulkan backend disabled by GGML_DISABLE_VULKAN environment variable\n");
     }
 #endif
 #ifdef GGML_USE_WEBGPU

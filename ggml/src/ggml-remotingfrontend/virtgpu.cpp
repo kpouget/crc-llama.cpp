@@ -191,7 +191,7 @@ create_virtgpu() {
 
   virt_gpu_result_t result = virtgpu_open(gpu);
   if (result != APIR_SUCCESS) {
-    FATAL("%s: failed to create the open the virtgpu device :/", __func__);
+    FATAL("%s: failed to open the virtgpu device :/", __func__);
     return NULL;
   }
 
@@ -277,17 +277,15 @@ virtgpu_open_device(struct virtgpu *gpu, const drmDevicePtr dev)
    }
 
    if (!supported_bus || !(dev->available_nodes & (1 << DRM_NODE_RENDER))) {
-      if (VN_DEBUG(INIT)) {
-         const char *name = "unknown";
-         for (uint32_t i = 0; i < DRM_NODE_MAX; i++) {
-            if (dev->available_nodes & (1 << i)) {
-               name = dev->nodes[i];
-               break;
-            }
-         }
-         vn_log(gpu->instance, "skipping DRM device %s", name);
-      }
-      return APIR_ERROR_INITIALIZATION_FAILED;
+       const char *name = "unknown";
+       for (uint32_t i = 0; i < DRM_NODE_MAX; i++) {
+           if (dev->available_nodes & (1 << i)) {
+	       name = dev->nodes[i];
+	       break;
+	   }
+       }
+       MESSAGE("skipping DRM device %s", name);
+       return APIR_ERROR_INITIALIZATION_FAILED;
    }
 
    const char *primary_path = dev->nodes[DRM_NODE_PRIMARY];
@@ -295,26 +293,24 @@ virtgpu_open_device(struct virtgpu *gpu, const drmDevicePtr dev)
 
    int fd = open(node_path, O_RDWR | O_CLOEXEC);
    if (fd < 0) {
-      if (VN_DEBUG(INIT))
-         vn_log(gpu->instance, "failed to open %s", node_path);
-      return APIR_ERROR_INITIALIZATION_FAILED;
+       MESSAGE("failed to open %s", node_path);
+       return APIR_ERROR_INITIALIZATION_FAILED;
    }
 
    drmVersionPtr version = drmGetVersion(fd);
    if (!version || strcmp(version->name, "virtio_gpu") ||
        version->version_major != 0) {
-      if (VN_DEBUG(INIT)) {
-         if (version) {
-            vn_log(gpu->instance, "unknown DRM driver %s version %d",
+       if (version) {
+	   MESSAGE("unknown DRM driver %s version %d",
                    version->name, version->version_major);
-         } else {
-            vn_log(gpu->instance, "failed to get DRM driver version");
-         }
-      }
-      if (version)
-         drmFreeVersion(version);
-      close(fd);
-      return APIR_ERROR_INITIALIZATION_FAILED;
+       } else {
+  	   MESSAGE("failed to get DRM driver version");
+       }
+
+       if (version)
+           drmFreeVersion(version);
+       close(fd);
+       return APIR_ERROR_INITIALIZATION_FAILED;
    }
 
    gpu->fd = fd;
@@ -366,11 +362,8 @@ virtgpu_init_context(struct virtgpu *gpu)
    assert(!gpu->capset.version);
    const int ret = virtgpu_ioctl_context_init(gpu, gpu->capset.id);
    if (ret) {
-      if (VN_DEBUG(INIT)) {
-         vn_log(gpu->instance, "failed to initialize context: %s",
-                strerror(errno));
-      }
-      return APIR_ERROR_INITIALIZATION_FAILED;
+       MESSAGE("failed to initialize context: %s", strerror(errno));
+       return APIR_ERROR_INITIALIZATION_FAILED;
    }
 
    return APIR_SUCCESS;
@@ -379,18 +372,15 @@ virtgpu_init_context(struct virtgpu *gpu)
 static virt_gpu_result_t
 virtgpu_init_capset(struct virtgpu *gpu)
 {
-   gpu->capset.id = VIRGL_RENDERER_CAPSET_VENUS;
+   gpu->capset.id = VIRGL_RENDERER_CAPSET_APIR;
    gpu->capset.version = 0;
 
    const int ret =
       virtgpu_ioctl_get_caps(gpu, gpu->capset.id, gpu->capset.version,
                              &gpu->capset.data, sizeof(gpu->capset.data));
    if (ret) {
-      if (VN_DEBUG(INIT)) {
-         vn_log(gpu->instance, "failed to get venus v%d capset: %s",
-                gpu->capset.version, strerror(errno));
-      }
-      return APIR_ERROR_INITIALIZATION_FAILED;
+       MESSAGE("failed to get APIR v%d capset: %s", gpu->capset.version, strerror(errno));
+       return APIR_ERROR_INITIALIZATION_FAILED;
    }
 
    return APIR_SUCCESS;
@@ -407,11 +397,9 @@ virtgpu_init_params(struct virtgpu *gpu)
    for (uint32_t i = 0; i < ARRAY_SIZE(required_params); i++) {
       val = virtgpu_ioctl_getparam(gpu, required_params[i]);
       if (!val) {
-         if (VN_DEBUG(INIT)) {
-            vn_log(gpu->instance, "required kernel param %d is missing",
-                   (int)required_params[i]);
-         }
-         return APIR_ERROR_INITIALIZATION_FAILED;
+	MESSAGE("required kernel param %d is missing", (int)required_params[i]);
+
+	return APIR_ERROR_INITIALIZATION_FAILED;
       }
    }
 
