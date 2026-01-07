@@ -33,32 +33,6 @@ static void log_call_duration(long long call_duration_ns, const char *name);
 const uint64_t APIR_HANDSHAKE_MAX_WAIT_MS = 15*1000; // 15s
 const uint64_t APIR_LOADLIBRARY_MAX_WAIT_MS = 60*1000; // 60s
 
-static inline void
-virtgpu_init_shmem_blob_mem(struct virtgpu *gpu)
-{
-   /* VIRTGPU_BLOB_MEM_GUEST allocates from the guest system memory.  They are
-    * logically contiguous in the guest but are sglists (iovecs) in the host.
-    * That makes them slower to process in the host.  With host process
-    * isolation, it also becomes impossible for the host to access sglists
-    * directly.
-    *
-    * While there are ideas (and shipped code in some cases) such as creating
-    * udmabufs from sglists, or having a dedicated guest heap, it seems the
-    * easiest way is to reuse VIRTGPU_BLOB_MEM_HOST3D.  That is, when the
-    * renderer sees a request to export a blob where
-    *
-    *  - blob_mem is VIRTGPU_BLOB_MEM_HOST3D
-    *  - blob_flags is VIRTGPU_BLOB_FLAG_USE_MAPPABLE
-    *  - blob_id is 0
-    *
-    * it allocates a host shmem.
-    *
-    * supports_blob_id_0 has been enforced by mandated render server config.
-    */
-   assert(gpu->capset.data.supports_blob_id_0);
-   gpu->shmem_blob_mem = VIRTGPU_BLOB_MEM_HOST3D;
-}
-
 static int
 virtgpu_handshake(struct virtgpu *gpu) {
   struct vn_cs_encoder *encoder;
@@ -200,6 +174,7 @@ create_virtgpu() {
 
   result = virtgpu_init_capset(gpu);
   assert(result == APIR_SUCCESS);
+  assert(gpu->capset.data.supports_blob_resources);
 
   result = virtgpu_init_context(gpu);
   assert(result == APIR_SUCCESS);
@@ -208,15 +183,14 @@ create_virtgpu() {
    UNUSED(result);
 #endif
 
-  virtgpu_init_shmem_blob_mem(gpu);
-
   gpu->reply_shmem = virtgpu_shmem_create(gpu, 0x4000);
-  gpu->data_shmem = virtgpu_shmem_create(gpu, 0x1830000); // 24MiB
 
   if (!gpu->reply_shmem) {
     FATAL("%s: failed to create the shared reply memory pages :/", __func__);
     return NULL;
   }
+
+  gpu->data_shmem = virtgpu_shmem_create(gpu, 0x1830000); // 24MiB
 
   if (!gpu->data_shmem) {
     FATAL("%s: failed to create the shared data memory pages :/", __func__);

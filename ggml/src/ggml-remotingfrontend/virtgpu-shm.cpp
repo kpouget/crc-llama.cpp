@@ -83,7 +83,7 @@ virtgpu_shmem_create(struct virtgpu *gpu, size_t size)
 
    uint32_t res_id;
    uint32_t gem_handle = virtgpu_ioctl_resource_create_blob(
-      gpu, gpu->shmem_blob_mem, VIRTGPU_BLOB_FLAG_USE_MAPPABLE, size, 0,
+      gpu, VIRTGPU_BLOB_MEM_HOST3D, VIRTGPU_BLOB_FLAG_USE_MAPPABLE, size, 0,
       &res_id);
    if (!gem_handle)
       return NULL;

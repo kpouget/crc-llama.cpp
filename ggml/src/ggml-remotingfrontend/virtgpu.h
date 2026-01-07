@@ -77,7 +77,6 @@ struct virtgpu {
     struct virgl_renderer_capset_venus data;
   } capset;
 
-  uint32_t shmem_blob_mem;
   uint32_t bo_blob_mem;
 
   /* note that we use gem_handle instead of res_id to index because
