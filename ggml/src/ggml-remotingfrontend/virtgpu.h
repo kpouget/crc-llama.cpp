@@ -60,34 +60,13 @@ struct virtgpu {
 
   int fd;
 
-  bool has_primary;
-  int primary_major;
-  int primary_minor;
-  int render_major;
-  int render_minor;
-
-  int bustype;
-  drmPciBusInfo pci_bus_info;
-
-  uint32_t max_timeline_count;
-
   struct {
     enum virgl_renderer_capset id;
     uint32_t version;
-    struct virgl_renderer_capset_venus data;
+    struct virgl_renderer_capset_apir data;
   } capset;
 
-  uint32_t bo_blob_mem;
-
-  /* note that we use gem_handle instead of res_id to index because
-   * res_id is monotonically increasing by default (see
-   * virtio_gpu_resource_id_get)
-   */
   struct util_sparse_array shmem_array;
-
-  mtx_t dma_buf_import_mutex;
-
-  bool supports_cross_device;
 
   /* APIR */
   struct vn_renderer_shmem *reply_shmem;

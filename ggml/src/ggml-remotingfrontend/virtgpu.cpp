@@ -11,7 +11,6 @@ static virt_gpu_result_t virtgpu_open_device(struct virtgpu *gpu, const drmDevic
 static virt_gpu_result_t virtgpu_open(struct virtgpu *gpu);
 
 
-static virt_gpu_result_t virtgpu_init_params(struct virtgpu *gpu);
 static virt_gpu_result_t virtgpu_init_capset(struct virtgpu *gpu);
 static virt_gpu_result_t virtgpu_init_context(struct virtgpu *gpu);
 
@@ -169,9 +168,6 @@ create_virtgpu() {
     return NULL;
   }
 
-  result = virtgpu_init_params(gpu);
-  assert(result == APIR_SUCCESS);
-
   result = virtgpu_init_capset(gpu);
   assert(result == APIR_SUCCESS);
   assert(gpu->capset.data.supports_blob_resources);
@@ -235,34 +231,6 @@ virtgpu_open(struct virtgpu *gpu)
 static virt_gpu_result_t
 virtgpu_open_device(struct virtgpu *gpu, const drmDevicePtr dev)
 {
-   bool supported_bus = false;
-
-   switch (dev->bustype) {
-   case DRM_BUS_PCI:
-      if (dev->deviceinfo.pci->vendor_id == VIRTGPU_PCI_VENDOR_ID &&
-          dev->deviceinfo.pci->device_id == VIRTGPU_PCI_DEVICE_ID)
-         supported_bus = true;
-      break;
-   case DRM_BUS_PLATFORM:
-      supported_bus = true;
-      break;
-   default:
-      break;
-   }
-
-   if (!supported_bus || !(dev->available_nodes & (1 << DRM_NODE_RENDER))) {
-       const char *name = "unknown";
-       for (uint32_t i = 0; i < DRM_NODE_MAX; i++) {
-           if (dev->available_nodes & (1 << i)) {
-	       name = dev->nodes[i];
-	       break;
-	   }
-       }
-       MESSAGE("skipping DRM device %s", name);
-       return APIR_ERROR_INITIALIZATION_FAILED;
-   }
-
-   const char *primary_path = dev->nodes[DRM_NODE_PRIMARY];
    const char *node_path = dev->nodes[DRM_NODE_RENDER];
 
    int fd = open(node_path, O_RDWR | O_CLOEXEC);
@@ -289,45 +257,11 @@ virtgpu_open_device(struct virtgpu *gpu, const drmDevicePtr dev)
 
    gpu->fd = fd;
 
-   struct stat st;
-   if (stat(primary_path, &st) == 0) {
-      gpu->has_primary = true;
-      gpu->primary_major = major(st.st_rdev);
-      gpu->primary_minor = minor(st.st_rdev);
-   } else {
-      gpu->has_primary = false;
-      gpu->primary_major = 0;
-      gpu->primary_minor = 0;
-   }
-   stat(node_path, &st);
-   gpu->render_major = major(st.st_rdev);
-   gpu->render_minor = minor(st.st_rdev);
-
-   gpu->bustype = dev->bustype;
-   if (dev->bustype == DRM_BUS_PCI)
-      gpu->pci_bus_info = *dev->businfo.pci;
-
    drmFreeVersion(version);
 
    MESSAGE("using DRM device %s", node_path);
 
    return APIR_SUCCESS;
-}
-
-void
-vn_log(struct remoting_dev_instance *instance, const char *format, ...)
-{
-   if (instance) {
-     printf("<INST>");
-   }
-
-   va_list ap;
-
-   va_start(ap, format);
-   vprintf(format, ap);
-   va_end(ap);
-
-   /* instance may be NULL or partially initialized */
 }
 
 static virt_gpu_result_t
@@ -360,54 +294,6 @@ virtgpu_init_capset(struct virtgpu *gpu)
    return APIR_SUCCESS;
 }
 
-static virt_gpu_result_t
-virtgpu_init_params(struct virtgpu *gpu)
-{
-   const uint64_t required_params[] = {
-      VIRTGPU_PARAM_3D_FEATURES,   VIRTGPU_PARAM_CAPSET_QUERY_FIX,
-      VIRTGPU_PARAM_RESOURCE_BLOB, VIRTGPU_PARAM_CONTEXT_INIT,
-   };
-   uint64_t val;
-   for (uint32_t i = 0; i < ARRAY_SIZE(required_params); i++) {
-      val = virtgpu_ioctl_getparam(gpu, required_params[i]);
-      if (!val) {
-	MESSAGE("required kernel param %d is missing", (int)required_params[i]);
-
-	return APIR_ERROR_INITIALIZATION_FAILED;
-      }
-   }
-
-   val = virtgpu_ioctl_getparam(gpu, VIRTGPU_PARAM_HOST_VISIBLE);
-   if (val) {
-      gpu->bo_blob_mem = VIRTGPU_BLOB_MEM_HOST3D;
-   } else {
-      val = virtgpu_ioctl_getparam(gpu, VIRTGPU_PARAM_GUEST_VRAM);
-      if (val) {
-         gpu->bo_blob_mem = VIRTGPU_BLOB_MEM_GUEST_VRAM;
-      }
-   }
-
-   if (!val) {
-      vn_log(gpu->instance,
-             "one of required kernel params (%d or %d) is missing",
-             (int)VIRTGPU_PARAM_HOST_VISIBLE, (int)VIRTGPU_PARAM_GUEST_VRAM);
-      return APIR_ERROR_INITIALIZATION_FAILED;
-   }
-
-   /* Cross-device feature is optional.  It enables sharing dma-bufs
-    * with other virtio devices, like virtio-wl or virtio-video used
-    * by ChromeOS VMs.  Qemu doesn't support cross-device sharing.
-    */
-   val = virtgpu_ioctl_getparam(gpu, VIRTGPU_PARAM_CROSS_DEVICE);
-   if (val)
-      gpu->supports_cross_device = true;
-
-   /* implied by CONTEXT_INIT uapi */
-   gpu->max_timeline_count = 64;
-
-   return APIR_SUCCESS;
-}
-
 static int
 virtgpu_ioctl_context_init(struct virtgpu *gpu,
                            enum virgl_renderer_capset capset_id)
@@ -419,7 +305,7 @@ virtgpu_ioctl_context_init(struct virtgpu *gpu,
       },
       {
          .param = VIRTGPU_CONTEXT_PARAM_NUM_RINGS,
-         .value = 64,
+         .value = 1,
       },
       {
          .param = VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK,
