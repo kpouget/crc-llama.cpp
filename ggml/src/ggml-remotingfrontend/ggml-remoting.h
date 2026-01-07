@@ -96,7 +96,7 @@ struct ggml_backend_remoting_device_context {
   std::string name;
   std::string description;
 
-  std::vector<std::tuple<void*, size_t, struct vn_renderer_shmem *>> shared_memory;
+  std::vector<std::tuple<void*, size_t, struct virtgpu_shmem *>> shared_memory;
 
   struct virtgpu *gpu;
 

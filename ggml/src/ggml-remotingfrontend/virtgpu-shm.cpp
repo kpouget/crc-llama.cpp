@@ -72,12 +72,12 @@ void
 virtgpu_shmem_destroy(struct virtgpu *gpu,
                       struct virtgpu_shmem *shmem)
 {
-  munmap(shmem->base.mmap_ptr, shmem->base.mmap_size);
+  munmap(shmem->mmap_ptr, shmem->mmap_size);
   virtgpu_ioctl_gem_close(gpu, shmem->gem_handle);
 }
 
-struct vn_renderer_shmem *
-virtgpu_shmem_create(struct virtgpu *gpu, size_t size)
+int
+virtgpu_shmem_create(struct virtgpu *gpu, size_t size, struct virtgpu_shmem *shmem)
 {
    size = align64(size, 16384);
 
@@ -85,27 +85,20 @@ virtgpu_shmem_create(struct virtgpu *gpu, size_t size)
    uint32_t gem_handle = virtgpu_ioctl_resource_create_blob(
       gpu, VIRTGPU_BLOB_MEM_HOST3D, VIRTGPU_BLOB_FLAG_USE_MAPPABLE, size, 0,
       &res_id);
+
    if (!gem_handle)
-      return NULL;
+      return 1;
 
    void *ptr = virtgpu_ioctl_map(gpu, gem_handle, size);
    if (!ptr) {
       virtgpu_ioctl_gem_close(gpu, gem_handle);
-      return NULL;
+      return 1;
    }
-   if (gpu->shmem_array.elem_size == 0) {
-     INFO("gpu->shmem_array.elem_size == 0 | Not working :/\n");
-     assert(false);
-   }
-   struct virtgpu_shmem *shmem = (struct virtgpu_shmem *) util_sparse_array_get(&gpu->shmem_array, gem_handle);
 
+   shmem->res_id = res_id;
+   shmem->mmap_size = size;
+   shmem->mmap_ptr = ptr;
    shmem->gem_handle = gem_handle;
-   shmem->base.res_id = res_id;
-   shmem->base.mmap_size = size;
-   shmem->base.mmap_ptr = ptr;
-   shmem->base.refcount.count = 1;
-   shmem->base.gem_handle = gem_handle;
-   shmem->base.shmem = shmem;
 
-   return &shmem->base;
+   return 0;
 }

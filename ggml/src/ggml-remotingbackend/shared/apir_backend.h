@@ -25,7 +25,7 @@ typedef uintptr_t apir_buffer_host_handle_t;
 typedef struct {
   apir_buffer_host_handle_t host_handle;
 
-  struct vn_renderer_shmem *shmem;
+  struct virtgpu_shmem *shmem;
   apir_buffer_type_host_handle_t buft_host_handle;
 } apir_buffer_context_t;
 

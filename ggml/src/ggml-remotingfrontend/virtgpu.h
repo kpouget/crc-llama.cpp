@@ -36,6 +36,9 @@ enum virgl_renderer_capset {
 #define VIRTGPU_BLOB_MEM_GUEST_VRAM 0x0004
 #define VIRTGPU_PARAM_GUEST_VRAM 9
 
+#define SHMEM_DATA_SIZE 0x1830000 // 24MiB
+#define SHMEM_REPLY_SIZE 0x4000
+
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef enum virt_gpu_result_t {
@@ -43,17 +46,15 @@ typedef enum virt_gpu_result_t {
   APIR_ERROR_INITIALIZATION_FAILED = -1,
 } virt_gpu_result_t;
 
+struct virtgpu_shmem {
+   uint32_t res_id;
+   size_t mmap_size;
+   void *mmap_ptr;
 
-struct remoting_dev_instance {
-  int yes;
+   uint32_t gem_handle;
 };
 
 #define PRINTFLIKE(f, a) __attribute__ ((format(__printf__, f, a)))
-
-inline void
-vn_log(struct remoting_dev_instance *instance, const char *format, ...)
-  PRINTFLIKE(2, 3);
-
 
 struct virtgpu {
   struct remoting_dev_instance *instance;
@@ -68,9 +69,9 @@ struct virtgpu {
 
   struct util_sparse_array shmem_array;
 
-  /* APIR */
-  struct vn_renderer_shmem *reply_shmem;
-  struct vn_renderer_shmem *data_shmem;
+  /* APIR communication pages */
+  struct virtgpu_shmem reply_shmem;
+  struct virtgpu_shmem data_shmem;
 };
 
 

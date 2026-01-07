@@ -13,7 +13,7 @@ ggml_backend_remoting_host_buffer_free_buffer(ggml_backend_buffer_t buffer) {
   }
   struct ggml_backend_remoting_device_context *device_ctx = GET_DEVICE_CONTEXT();
 
-  struct vn_renderer_shmem *shmem = nullptr;
+  struct virtgpu_shmem *shmem = nullptr;
   size_t index;
 
   for (size_t i = 0; i < device_ctx->shared_memory.size(); i++) {
@@ -31,7 +31,7 @@ ggml_backend_remoting_host_buffer_free_buffer(ggml_backend_buffer_t buffer) {
     return;
   }
 
-  virtgpu_shmem_destroy(device_ctx->gpu, shmem->shmem);
+  virtgpu_shmem_destroy(device_ctx->gpu, shmem);
 
   device_ctx->shared_memory.erase(device_ctx->shared_memory.begin() + index);
 }
