@@ -9,21 +9,19 @@
 
 #include "shared/api_remoting.h"
 #include "shared/apir_backend.h"
-#include "shared/venus_cs.h"
+#include "shared/apir_cs.h"
 
 #define GGML_BACKEND_LIBRARY_PATH_ENV "APIR_LLAMA_CPP_GGML_LIBRARY_PATH"
 #define GGML_BACKEND_LIBRARY_REG_ENV "APIR_LLAMA_CPP_GGML_LIBRARY_REG"
 #define GGML_BACKEND_LIBRARY_INIT_ENV "APIR_LLAMA_CPP_GGML_LIBRARY_INIT"
 
-#define GGML_BACKEND_LIBRARY_METAL_DEVICE_CONTEXT "ggml_backend_metal_get_device_context"
-
 static void *backend_library_handle = NULL;
 
 extern "C" {
   void apir_backend_deinit(void) {
-    auto buffers = get_track_backend_buffers();
+    auto buffers = apir_get_track_backend_buffers();
     for (const auto& buffer: buffers) {
-      untrack_backend_buffer(buffer);
+      apir_untrack_backend_buffer(buffer);
       buffer->iface.free_buffer(buffer);
     }
 
@@ -98,17 +96,6 @@ extern "C" {
 
       return APIR_LOAD_LIBRARY_SYMBOL_MISSING;
     }
-
-#if 0
-    ggml_backend_metal_get_device_context_fct = (void (*)(ggml_backend_dev_t, bool *, bool *, bool *)) dlsym(backend_library_handle, GGML_BACKEND_LIBRARY_METAL_DEVICE_CONTEXT);
-    dlsym_error = dlerror();
-    if (dlsym_error) {
-      ERROR("cannot find the GGML device context symbol '%s': %s\n",
-	    GGML_BACKEND_LIBRARY_METAL_DEVICE_CONTEXT, dlsym_error);
-
-      return APIR_LOAD_LIBRARY_SYMBOL_MISSING;
-    }
-#endif
 
     uint32_t ret = backend_dispatch_initialize(ggml_backend_reg_fct, ggml_backend_init_fct);
 

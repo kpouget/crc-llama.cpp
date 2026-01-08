@@ -8,18 +8,13 @@
 #include "ggml-impl.h"
 #include "ggml-backend-impl.h"
 #include "ggml-backend.h"
-#include "ggml-metal-remoting.h"
+
 #include "virtgpu.h"
 
-
 // USE_ALWAYS_TRUE_SUPPORTS_OP: 1 is fast, 0 avoid micro-benchmark crashes
-#ifdef __x86_64__ // linux
-  #define USE_ALWAYS_TRUE_SUPPORTS_OP 1
-  #define USE_METAL_GUEST_SUPPORTS_OP 0
-#else // macos
-  #define USE_ALWAYS_TRUE_SUPPORTS_OP 1
-  #define USE_METAL_GUEST_SUPPORTS_OP 0
-#endif
+
+#define USE_ALWAYS_TRUE_SUPPORTS_OP 1
+#define USE_METAL_GUEST_SUPPORTS_OP 0
 
 #define DEV_TO_GPU(name) \
   ((struct ggml_backend_remoting_device_context *) (name)->context)->gpu
@@ -45,52 +40,6 @@ ggml_buffer_type_to_apir_handle(ggml_backend_buffer_type_t buft) {
   return (apir_buffer_type_host_handle_t) buft->context;
 }
 
-#define NOT_IMPLEMENTED							\
-  do {									\
-    static bool first = true;						\
-    if (first) {							\
-      printf("\nWARN: ###\nWARN: ### reached unimplemented function %s\nWARN: ###\n\n", __func__); \
-      first = false;							\
-    }									\
-  } while(0)
-
-#define BEING_IMPLEMENTED							\
-  do {									\
-      printf("\nINFO: ###\nINFO: ### function being implemented: %s\nINFO: ###\n\n", __func__); \
-  } while(0)
-
-#define NEXT
-
-#define STOP_HERE \
-  thks_bye()
-
-#define BREAKPOINT \
-  breakpoint()
-
-#ifndef NDEBUG
-#define IMPLEMENTED							\
-  printf("INFO: ### reached implemented function %s\n", __func__)
-#else
-#define IMPLEMENTED							\
-  do {} while(0)
-#endif
-
-#ifndef NDEBUG
-#define IMPLEMENTED_ONCE						\
-  do {									\
-    static bool first = true;						\
-    if (first) {							\
-      printf("INFO: ### reached implemented function %s\n", __func__);  \
-      first = false;							\
-    }									\
-  } while(0)
-#else
-#define IMPLEMENTED_ONCE			\
-  do {} while(0)
-#endif
-
-#define RMT_LOG_DEBUG(msg) std::cerr << msg << std::endl
-
 struct ggml_backend_remoting_device_context {
   size_t device;
   std::string name;
@@ -99,8 +48,6 @@ struct ggml_backend_remoting_device_context {
   std::vector<std::tuple<void*, size_t, struct virtgpu_shmem *>> shared_memory;
 
   struct virtgpu *gpu;
-
-  const struct ggml_backend_metal_device_context *metal_dev_ctx;
 };
 
 struct ggml_backend_remoting_buffer_context {
@@ -135,6 +82,8 @@ void ggml_remoting_destroy_buffer(remoting_buffer& buf);
 struct remoting_device_struct;
 typedef std::shared_ptr<remoting_device_struct> remoting_device;
 typedef std::weak_ptr<remoting_device_struct> remoting_device_ref;
+
+// TO REMOVE
 
 struct remoting_context_struct {
   int i;

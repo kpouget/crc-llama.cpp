@@ -3,14 +3,10 @@
 static const char * ggml_backend_remoting_get_name(ggml_backend_t backend) {
   UNUSED(backend);
 
-  //IMPLEMENTED_ONCE;
-
   return "API Remoting backend";
 }
 
 static void ggml_backend_remoting_free(ggml_backend_t backend) {
-  IMPLEMENTED;
-
   delete backend;
 }
 
@@ -18,8 +14,6 @@ struct timer_data graph_compute_timer = {0, 0, 0, "compute_timer"};
 
 static ggml_status ggml_backend_remoting_graph_compute(ggml_backend_t backend, ggml_cgraph * cgraph) {
   struct virtgpu *gpu = DEV_TO_GPU(backend->device);
-
-  IMPLEMENTED_ONCE;
 
   start_timer(&graph_compute_timer);
 
@@ -36,12 +30,12 @@ static void ggml_backend_remoting_graph_optimize(ggml_backend_t backend, ggml_cg
     UNUSED(gpu);
     UNUSED(cgraph);
 
-    NOT_IMPLEMENTED;
+    // not working yet
 #else
     start_timer(&graph_compute_timer);
-    
+
     apir_backend_graph_optimize(gpu, cgraph);
-    
+
     stop_timer(&graph_compute_timer);
 #endif
 }
@@ -72,7 +66,6 @@ static ggml_guid_t ggml_backend_remoting_guid() {
 
 ggml_backend_t ggml_backend_remoting_device_init(ggml_backend_dev_t dev, const char * params) {
   UNUSED(params);
-  IMPLEMENTED;
 
   ggml_backend_remoting_device_context * ctx = (ggml_backend_remoting_device_context *)dev->context;
 

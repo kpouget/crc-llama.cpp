@@ -2,11 +2,7 @@
 #include "ggml-remoting.h"
 #include "virtgpu.h"
 #include "../ggml-remotingbackend/shared/apir_backend.h"
-#include "../ggml-remotingbackend/shared/venus_cs_ggml.h"
-
-#define CACHED
-//  printf("INFO: ### found response in the cache %s\n", __func__)o
-
+#include "../ggml-remotingbackend/shared/apir_cs_ggml.h"
 
 #define REMOTE_CALL_PREPARE(gpu_dev_name, encoder_name, apir_command_type__)		\
   do {									\

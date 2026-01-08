@@ -8,8 +8,8 @@
 #include "backend-utils.h"
 #include "backend-convert.h"
 #include "shared/apir_backend.h"
-#include "shared/venus_cs.h"
-#include "shared/venus_cs_ggml.h"
+#include "shared/apir_cs.h"
+#include "shared/apir_cs_ggml.h"
 
 typedef uint32_t (*backend_dispatch_t)(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 

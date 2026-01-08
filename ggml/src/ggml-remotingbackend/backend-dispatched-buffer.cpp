@@ -154,7 +154,7 @@ backend_buffer_free_buffer(struct apir_encoder *enc, struct apir_decoder *dec, s
   ggml_backend_buffer_t buffer;
   buffer = apir_decode_ggml_buffer(dec);
 
-  if (!untrack_backend_buffer(buffer)) {
+  if (!apir_untrack_backend_buffer(buffer)) {
     WARNING("%s: unknown buffer %p", (void *) buffer);
     return 1;
   }

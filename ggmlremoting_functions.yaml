@@ -82,12 +82,6 @@ function_groups:
       - name: "graph_optimize"
         enabled: false
 
-  metal:
-    group_description: "metal"
-    functions:
-      - name: "get_device_context"
-        enabled: true
-
 # Function metadata - describes return types and additional parameters (beyond struct virtgpu *gpu)
 function_metadata:
   # Device functions
@@ -221,12 +215,6 @@ function_metadata:
     frontend_return: "ggml_cgraph *"
     frontend_extra_params:
       - "ggml_cgraph *cgraph"
-
-  # Metal functions
-  metal_get_device_context:
-    frontend_return: "bool"
-    frontend_extra_params:
-      - "struct ggml_backend_metal_device_context *metal_dev_ctx"
 
 # Naming patterns used for code generation
 naming_patterns:

@@ -52,7 +52,6 @@ virtgpu_handshake(struct virtgpu *gpu) {
 
     /* *** */
 
-
     uint32_t ret_magic;
     long long call_duration_ns;
     ret_magic = remote_call(gpu, encoder, &decoder, APIR_HANDSHAKE_MAX_WAIT_MS, &call_duration_ns);
@@ -77,15 +76,11 @@ virtgpu_handshake(struct virtgpu *gpu) {
         apir_decode_uint32_t(decoder, &host_minor);
     }
 
-    /* *** */
-
     remote_call_finish(gpu, encoder, decoder);
 
     if (ret_magic != APIR_HANDSHAKE_MAGIC) {
         return 1;
     }
-
-    /* *** */
 
     INFO("%s: Guest is running with %u.%u", __func__, guest_major, guest_minor);
     INFO("%s: Host is running with %u.%u", __func__, host_major, host_minor);
@@ -95,8 +90,6 @@ virtgpu_handshake(struct virtgpu *gpu) {
     } else if (guest_minor != host_minor) {
         WARNING("Host minor (%d) and guest minor (%d) version differ", host_minor, guest_minor);
     }
-
-    INFO("Handshake with the host virglrenderer library completed.");
 
     return 0;
 }
@@ -386,6 +379,11 @@ remote_call_prepare(
    */
 
     int32_t cmd_type = apir_cmd_type;
+
+    // for testing during the hypervisor transition
+    if (!gpu->use_apir_capset) {
+	cmd_type += VENUS_COMMAND_TYPE_LENGTH;
+    }
     apir_encode_int32_t(&enc, &cmd_type);
     apir_encode_int32_t(&enc, &cmd_flags);
 

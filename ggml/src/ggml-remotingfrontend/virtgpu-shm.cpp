@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#include "virtgpu.h"
 #include "virtgpu-shm.h"
 
 static uint32_t

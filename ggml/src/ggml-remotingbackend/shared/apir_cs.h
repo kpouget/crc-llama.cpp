@@ -137,7 +137,6 @@ static inline void
 apir_encode(struct apir_encoder *enc, size_t size, const void *data, size_t data_size)
 {
   assert(size % 4 == 0);
-  /* TODO check if the generated code is optimal */
   apir_encoder_write(enc, size, data, data_size);
 }
 

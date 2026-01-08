@@ -40,7 +40,6 @@ apir_backend_graph_compute(struct virtgpu *gpu, ggml_cgraph *cgraph) {
 
     ggml_status status = GGML_STATUS_ABORTED;
     apir_decode_ggml_status(decoder, &status);
-    //INFO("Received status %u", status);
 
     remote_call_finish(gpu, encoder, decoder);
 

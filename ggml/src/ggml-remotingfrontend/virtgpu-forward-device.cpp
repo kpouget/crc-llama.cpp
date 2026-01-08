@@ -1,10 +1,10 @@
 #include "virtgpu-forward-impl.h"
+#include "virtgpu-shm.h"
 
 int
 apir_device_get_count(struct virtgpu *gpu) {
     static int32_t dev_count = -1;
     if (dev_count != -1) {
-        CACHED;
         return dev_count;
     }
 
@@ -17,8 +17,6 @@ apir_device_get_count(struct virtgpu *gpu) {
 
     apir_decode_int32_t(decoder, &dev_count);
 
-    INFO("%s: Forward DEV COUNT --> %d ", __func__, dev_count);
-
     remote_call_finish(gpu, encoder, decoder);
 
     return dev_count;
@@ -28,7 +26,6 @@ const char *
 apir_device_get_name(struct virtgpu *gpu) {
     static char *string = nullptr;
     if (string) {
-        CACHED;
         return string;
     }
     struct apir_encoder *encoder;
@@ -44,8 +41,6 @@ apir_device_get_name(struct virtgpu *gpu) {
         FATAL("%s: Could not allocate the device name buffer", __func__);
     }
     apir_decode_char_array(decoder, string, string_size);
-
-    INFO("%s: Forward DEV NAME --> %s", __func__, string);
 
     remote_call_finish(gpu, encoder, decoder);
 
@@ -66,10 +61,9 @@ apir_device_get_description(struct virtgpu *gpu) {
     char *string = (char *) apir_decoder_alloc_array(decoder, sizeof(char), string_size);
     if (!string) {
         FATAL("%s: Could not allocate the device description buffer", __func__);
+	return NULL;
     }
     apir_decode_char_array(decoder, string, string_size);
-
-    //INFO("%s: Forward DEV DESCR --> %s", __func__, string);
 
     remote_call_finish(gpu, encoder, decoder);
 
@@ -80,7 +74,6 @@ uint32_t
 apir_device_get_type(struct virtgpu *gpu) {
     static uint32_t dev_type = 255;
     if (dev_type != 255) {
-        CACHED;
         return dev_type;
     }
 
@@ -94,8 +87,6 @@ apir_device_get_type(struct virtgpu *gpu) {
 
     apir_decode_uint32_t(decoder, &dev_type);
 
-    INFO("%s: Forward DEV TYPE --> %d ", __func__, dev_type);
-
     remote_call_finish(gpu, encoder, decoder);
 
     return dev_type;
@@ -105,16 +96,6 @@ void
 apir_device_get_memory(struct virtgpu *gpu, size_t *free, size_t *total) {
     static size_t dev_free = 0;
     static size_t dev_total = 0;
-    /*
-      if (dev_total != 0) {
-      WARNING("Not sure if llama.cpp expects fresh information for the free memory ...");
-      *free = dev_free;
-      *total = dev_total;
-
-      CACHED;
-      return;
-      }
-    */
     struct apir_encoder *encoder;
     struct apir_decoder *decoder;
     ApirForwardReturnCode ret;
@@ -128,9 +109,6 @@ apir_device_get_memory(struct virtgpu *gpu, size_t *free, size_t *total) {
 
     *free = dev_free;
     *total = dev_total;
-
-    //INFO("%s: Forward DEV FREE  mem --> %zu MB", __func__, dev_free / 1024 / 1024);
-    //INFO("%s: Forward DEV TOTAL mem --> %zu MB", __func__, dev_total / 1024 / 1024);
 
     remote_call_finish(gpu, encoder, decoder);
 
@@ -194,7 +172,6 @@ apir_device_get_props(struct virtgpu *gpu,
     apir_decode_bool_t(decoder, buffer_from_host_ptr);
     apir_decode_bool_t(decoder, events);
 
-    /* *** */
     remote_call_finish(gpu, encoder, decoder);
 
     return;
@@ -212,13 +189,11 @@ apir_device_buffer_from_ptr(struct virtgpu *gpu,
 
     REMOTE_CALL_PREPARE(gpu, encoder, APIR_COMMAND_TYPE_DEVICE_BUFFER_FROM_PTR);
 
-    /* *** */
-
-    if (virtgpu_shmem_create(gpu, size, buffer_context.shmem)) {
+    if (virtgpu_shmem_create(gpu, size, &buffer_context.shmem)) {
         FATAL("Couldn't allocate the guest-host shared buffer :/");
     }
 
-    apir_encode_virtgpu_shmem_res_id(encoder, buffer_context.shmem->res_id);
+    apir_encode_virtgpu_shmem_res_id(encoder, buffer_context.shmem.res_id);
 
     apir_encode_size_t(encoder, &size);
     apir_encode_size_t(encoder, &max_tensor_size);
@@ -227,8 +202,6 @@ apir_device_buffer_from_ptr(struct virtgpu *gpu,
 
     apir_decode_apir_buffer_host_handle_t(decoder, &buffer_context.host_handle);
     buffer_context.buft_host_handle = apir_decode_apir_buffer_type_host_handle(decoder);
-
-    /* *** */
 
     remote_call_finish(gpu, encoder, decoder);
 

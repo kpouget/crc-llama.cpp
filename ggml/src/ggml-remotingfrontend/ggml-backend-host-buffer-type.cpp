@@ -4,8 +4,6 @@ extern const ggml_backend_buffer_i ggml_backend_remoting_buffer_interface;
 
 static void
 ggml_backend_remoting_host_buffer_free_buffer(ggml_backend_buffer_t buffer) {
-  BEING_IMPLEMENTED;
-
   void *ptr = buffer->context;
 
   if (ptr == nullptr) {
@@ -38,8 +36,6 @@ ggml_backend_remoting_host_buffer_free_buffer(ggml_backend_buffer_t buffer) {
 
 static ggml_backend_buffer_t
 ggml_backend_remoting_host_buffer_type_alloc_buffer(ggml_backend_buffer_type_t buft, size_t size) {
-  IMPLEMENTED;
-
   struct virtgpu *gpu = BUFT_TO_GPU(buft);
 
   struct ggml_backend_remoting_buffer_context *context = (struct ggml_backend_remoting_buffer_context *) malloc(sizeof(*context));
@@ -49,7 +45,7 @@ ggml_backend_remoting_host_buffer_type_alloc_buffer(ggml_backend_buffer_type_t b
 
   context->gpu = gpu;
   context->apir_context = apir_device_buffer_from_ptr(gpu, size, size);
-  context->base = context->apir_context.shmem->mmap_ptr;
+  context->base = context->apir_context.shmem.mmap_ptr;
   context->is_host_buffer = true;
 
   ggml_backend_buffer_t buffer = ggml_backend_buffer_init(buft, ggml_backend_remoting_buffer_interface, (void *) context, size);
@@ -61,8 +57,6 @@ static const char *
 ggml_backend_remoting_host_buffer_type_get_name(ggml_backend_buffer_type_t buft) {
   UNUSED(buft);
 
-  IMPLEMENTED_ONCE;
-
   return "GUEST host buffer";
 }
 
@@ -70,16 +64,12 @@ static size_t
 ggml_backend_remoting_host_buffer_type_get_alignment(ggml_backend_buffer_type_t buft) {
   UNUSED(buft);
 
-  IMPLEMENTED_ONCE;
-
-  return 64; // not 100% sure ...
+  return 64;
 }
 
 static bool
 ggml_backend_remoting_host_buffer_type_is_host(ggml_backend_buffer_type_t buft) {
   UNUSED(buft);
-
-  IMPLEMENTED_ONCE;
 
   return true;
 }
@@ -87,9 +77,6 @@ ggml_backend_remoting_host_buffer_type_is_host(ggml_backend_buffer_type_t buft) 
 static size_t
 ggml_backend_remoting_host_buffer_type_get_max_size(ggml_backend_buffer_type_t buft) {
   UNUSED(buft);
-
-  IMPLEMENTED;
-  STOP_HERE;
 
   return SIZE_MAX;
 }

@@ -10,12 +10,11 @@ ggml_add_backend_library(ggml-remotingbackend
                          backend-dispatched-device.cpp
                          backend-dispatched-buffer.cpp
                          backend-dispatched-buffer-type.cpp
-                         backend-dispatched-metal.cpp
                          backend-utils.cpp
                          shared/api_remoting.h
                          shared/apir_backend.h
-                         shared/venus_cs.h
-                         venus_cs_ggml-rpc-back.cpp
+                         shared/apir_cs.h
+                         apir_cs_ggml-rpc-back.cpp
                         )
 
 target_compile_options(ggml-remotingbackend PRIVATE -std=c++20)

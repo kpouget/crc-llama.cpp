@@ -12,7 +12,7 @@
 #include "virtgpu-forward.h"
 #include "virtgpu-utils.h"
 #include "../ggml-remotingbackend/shared/api_remoting.h"
-#include "../ggml-remotingbackend/shared/venus_cs.h"
+#include "../ggml-remotingbackend/shared/apir_cs.h"
 
 #include "virtgpu-shm.h"
 
@@ -33,6 +33,8 @@ enum virgl_renderer_capset {
     VIRGL_RENDERER_CAPSET_APIR                    = 10,
 };
 
+#define VENUS_COMMAND_TYPE_LENGTH 331
+
 /* from src/virtio/vulkan/vn_renderer_virtgpu.c */
 #define VIRTGPU_PCI_VENDOR_ID 0x1af4
 #define VIRTGPU_PCI_DEVICE_ID 0x1050
@@ -48,14 +50,6 @@ typedef enum virt_gpu_result_t {
     APIR_SUCCESS = 0,
     APIR_ERROR_INITIALIZATION_FAILED = -1,
 } virt_gpu_result_t;
-
-struct virtgpu_shmem {
-    uint32_t res_id;
-    size_t mmap_size;
-    void *mmap_ptr;
-
-    uint32_t gem_handle;
-};
 
 #define PRINTFLIKE(f, a) __attribute__ ((format(__printf__, f, a)))
 

@@ -6,8 +6,6 @@
 #include "ggml-backend-impl.h"
 #include "ggml-backend.h"
 
-#include "ggml-metal.h"
-
 ggml_backend_reg_t reg = NULL;
 ggml_backend_dev_t dev = NULL;
 ggml_backend_t bck = NULL;

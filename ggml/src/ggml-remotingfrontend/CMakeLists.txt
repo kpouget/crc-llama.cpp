@@ -3,6 +3,9 @@ cmake_policy(SET CMP0114 NEW)
 
 message(STATUS "Enable API Remoting frontend")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(DRM REQUIRED libdrm)
+
 ggml_add_backend_library(ggml-remotingfrontend
                          ggml-backend-buffer.cpp
                          ggml-backend.cpp
@@ -10,7 +13,6 @@ ggml_add_backend_library(ggml-remotingfrontend
                          ggml-backend-reg.cpp
                          ggml-backend-buffer-type.cpp
                          ggml-backend-host-buffer-type.cpp
-                         ggml-metal-remoting.cpp
                          virtgpu-forward.h
                          virtgpu-forward.gen.h
                          virtgpu.cpp
@@ -20,17 +22,22 @@ ggml_add_backend_library(ggml-remotingfrontend
                          virtgpu-forward-buffer-type.cpp
                          virtgpu-forward-buffer.cpp
                          virtgpu-forward-backend.cpp
-                         virtgpu-forward-metal.cpp
                          virtgpu-forward-impl.h
                          ../../include/ggml-remoting-frontend.h
-                         venus_cs_ggml-rpc-front.cpp
+                         apir_cs_ggml-rpc-front.cpp
                         )
 
-# dnf install -y libdrm-devel
-target_link_libraries(ggml-remotingfrontend PUBLIC drm)
-target_include_directories(ggml-remotingfrontend PUBLIC /usr/include/libdrm/)
-target_include_directories(ggml-remotingfrontend PUBLIC ./include)
+  # Debug: Show what pkg-config found
+  message(STATUS "DRM_INCLUDE_DIRS: ${DRM_INCLUDE_DIRS}")
+  message(STATUS "DRM_LIBRARIES: ${DRM_LIBRARIES}")
+  message(STATUS "DRM_CFLAGS_OTHER: ${DRM_CFLAGS_OTHER}")
+  target_include_directories(ggml-remotingfrontend PUBLIC /usr/include/libdrm/)
 
+target_link_libraries(ggml-remotingfrontend PUBLIC ${DRM_LIBRARIES})
+target_include_directories(ggml-remotingfrontend PUBLIC ${DRM_INCLUDE_DIRS})
+target_compile_options(ggml-remotingfrontend PUBLIC ${DRM_CFLAGS_OTHER})
+
+target_include_directories(ggml-remotingfrontend PUBLIC ./include)
 target_include_directories(ggml-remotingfrontend PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_compile_options(ggml-remotingfrontend PRIVATE -std=c++20)

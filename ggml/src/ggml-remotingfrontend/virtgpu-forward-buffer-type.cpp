@@ -19,9 +19,6 @@ apir_buffer_type_get_name(struct virtgpu *gpu, ggml_backend_buffer_type_t buft) 
   }
   apir_decode_char_array(decoder, string, string_size);
 
-  //INFO("%s: Forward BUFT NAME --> %s", __func__, string);
-
-  /* *** */
 
   remote_call_finish(gpu, encoder, decoder);
 
@@ -43,8 +40,6 @@ apir_buffer_type_get_alignment(struct virtgpu *gpu, ggml_backend_buffer_type_t b
   size_t alignment;
   apir_decode_size_t(decoder, &alignment);
 
-  INFO("%s: Forward BUFT ALIGNMENT --> %zu ", __func__, alignment);
-
   remote_call_finish(gpu, encoder, decoder);
 
   return alignment;
@@ -64,8 +59,6 @@ apir_buffer_type_get_max_size(struct virtgpu *gpu, ggml_backend_buffer_type_t bu
 
   size_t max_size;
   apir_decode_size_t(decoder, &max_size);
-
-  INFO("%s: Forward BUFT MAX SIZE --> %zu ", __func__, max_size);
 
   remote_call_finish(gpu, encoder, decoder);
 
@@ -87,8 +80,6 @@ apir_buffer_type_is_host(struct virtgpu *gpu, ggml_backend_buffer_type_t buft) {
   bool is_host;
   apir_decode_bool_t(decoder, &is_host);
 
-  INFO("%s: buffer is host? %d", __func__, is_host);
-
   remote_call_finish(gpu, encoder, decoder);
 
   return is_host;
@@ -101,7 +92,6 @@ apir_buffer_type_alloc_buffer(struct virtgpu *gpu, ggml_backend_buffer_type_t bu
   ApirForwardReturnCode ret;
 
   apir_buffer_context_t buffer_context;
-  INFO("%s: allocate device memory (%lu)", __func__,  size);
 
   REMOTE_CALL_PREPARE(gpu, encoder, APIR_COMMAND_TYPE_BUFFER_TYPE_ALLOC_BUFFER);
 
