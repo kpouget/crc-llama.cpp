@@ -119,18 +119,18 @@ extern "C" {
 				   char *dec_cur, const char *dec_end,
 				   char *enc_cur, const char *enc_end,
 				   char **enc_cur_after) {
-    struct vn_cs_encoder _enc = {
+    struct apir_encoder _enc = {
       .cur = enc_cur,
       .start = enc_cur,
       .end = enc_end,
     };
-    struct vn_cs_encoder *enc = &_enc;
+    struct apir_encoder *enc = &_enc;
 
-    struct vn_cs_decoder _dec = {
+    struct apir_decoder _dec = {
       .cur = dec_cur,
       .end = dec_end,
     };
-    struct vn_cs_decoder *dec = &_dec;
+    struct apir_decoder *dec = &_dec;
 
 
     if (cmd_type >= APIR_BACKEND_DISPATCH_TABLE_COUNT) {

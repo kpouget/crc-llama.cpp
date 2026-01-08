@@ -2,38 +2,38 @@
 
 
 /* device */
-uint32_t backend_device_get_device_count(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_count(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_name(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_description(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_type(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_memory(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_supports_op(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_buffer_type(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_get_props(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_device_buffer_from_ptr(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_device_count(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_count(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_name(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_description(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_type(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_memory(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_supports_op(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_buffer_type(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_get_props(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_device_buffer_from_ptr(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 /* buffer-type */
-uint32_t backend_buffer_type_get_name(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_type_get_alignment(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_type_get_max_size(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_type_is_host(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_type_alloc_buffer(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_type_get_alloc_size(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_get_name(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_get_alignment(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_get_max_size(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_is_host(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_alloc_buffer(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_type_get_alloc_size(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 /* buffer */
-uint32_t backend_buffer_get_base(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_set_tensor(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_get_tensor(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_cpy_tensor(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_clear(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
-uint32_t backend_buffer_free_buffer(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_get_base(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_set_tensor(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_get_tensor(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_cpy_tensor(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_clear(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_buffer_free_buffer(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 /* backend */
-uint32_t backend_backend_graph_compute(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_backend_graph_compute(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 /* metal */
-uint32_t backend_metal_get_device_context(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+uint32_t backend_metal_get_device_context(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 static inline const char *backend_dispatch_command_name(ApirBackendCommandType type)
 {

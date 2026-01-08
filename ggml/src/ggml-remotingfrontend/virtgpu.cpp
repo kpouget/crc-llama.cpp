@@ -34,8 +34,8 @@ const uint64_t APIR_LOADLIBRARY_MAX_WAIT_MS = 60*1000; // 60s
 
 static int
 virtgpu_handshake(struct virtgpu *gpu) {
-    struct vn_cs_encoder *encoder;
-    struct vn_cs_decoder *decoder;
+    struct apir_encoder *encoder;
+    struct apir_decoder *decoder;
 
     encoder = remote_call_prepare(gpu,  APIR_COMMAND_TYPE_HandShake, 0);
     if (!encoder) {
@@ -47,8 +47,8 @@ virtgpu_handshake(struct virtgpu *gpu) {
 
     uint32_t guest_major = APIR_PROTOCOL_MAJOR;
     uint32_t guest_minor = APIR_PROTOCOL_MINOR;
-    vn_encode_uint32_t(encoder, &guest_major);
-    vn_encode_uint32_t(encoder, &guest_minor);
+    apir_encode_uint32_t(encoder, &guest_major);
+    apir_encode_uint32_t(encoder, &guest_minor);
 
     /* *** */
 
@@ -73,8 +73,8 @@ virtgpu_handshake(struct virtgpu *gpu) {
         FATAL("%s: handshake with the virglrenderer failed (code=%d | %s):/",
               __func__, ret_magic, apir_backend_initialize_error(ret_magic));
     } else {
-        vn_decode_uint32_t(decoder, &host_major);
-        vn_decode_uint32_t(decoder, &host_minor);
+        apir_decode_uint32_t(decoder, &host_major);
+        apir_decode_uint32_t(decoder, &host_minor);
     }
 
     /* *** */
@@ -103,8 +103,8 @@ virtgpu_handshake(struct virtgpu *gpu) {
 
 static ApirLoadLibraryReturnCode
 virtgpu_load_library(struct virtgpu *gpu) {
-    struct vn_cs_encoder *encoder;
-    struct vn_cs_decoder *decoder;
+    struct apir_encoder *encoder;
+    struct apir_decoder *decoder;
     ApirLoadLibraryReturnCode ret;
 
     encoder = remote_call_prepare(gpu,  APIR_COMMAND_TYPE_LoadLibrary, 0);
@@ -359,7 +359,7 @@ virtgpu_ioctl_getparam(struct virtgpu *gpu, uint64_t param)
 }
 
 
-struct vn_cs_encoder *
+struct apir_encoder *
 remote_call_prepare(
     struct virtgpu *gpu,
     ApirCommandType apir_cmd_type,
@@ -371,7 +371,7 @@ remote_call_prepare(
 
     static char encoder_buffer[4096];
 
-    static struct vn_cs_encoder enc;
+    static struct apir_encoder enc;
     enc = {
         encoder_buffer,
         encoder_buffer,
@@ -386,11 +386,11 @@ remote_call_prepare(
    */
 
     int32_t cmd_type = apir_cmd_type;
-    vn_encode_int32_t(&enc, &cmd_type);
-    vn_encode_int32_t(&enc, &cmd_flags);
+    apir_encode_int32_t(&enc, &cmd_type);
+    apir_encode_int32_t(&enc, &cmd_flags);
 
     uint32_t reply_res_id = gpu->reply_shmem.res_id;
-    vn_encode_uint32_t(&enc, &reply_res_id);
+    apir_encode_uint32_t(&enc, &reply_res_id);
 
     return &enc;
 }
@@ -398,8 +398,8 @@ remote_call_prepare(
 void
 remote_call_finish(
     struct virtgpu *gpu,
-    struct vn_cs_encoder *enc,
-    struct vn_cs_decoder *dec) {
+    struct apir_encoder *enc,
+    struct apir_decoder *dec) {
     UNUSED(gpu);
 
     if (!enc) {
@@ -416,8 +416,8 @@ remote_call_finish(
 uint32_t
 remote_call(
     struct virtgpu *gpu,
-    struct vn_cs_encoder *encoder,
-    struct vn_cs_decoder **decoder,
+    struct apir_encoder *encoder,
+    struct apir_decoder **decoder,
     float max_wait_ms,
     long long *call_duration_ns)
 {
@@ -504,7 +504,7 @@ remote_call(
     /*
      * Prepare the decoder
      */
-    static struct vn_cs_decoder response_dec;
+    static struct apir_decoder response_dec;
     response_dec.cur = (char *) gpu->reply_shmem.mmap_ptr + sizeof(*atomic_reply_notif);
     response_dec.end = (char *) gpu->reply_shmem.mmap_ptr + gpu->reply_shmem.mmap_size;
     *decoder = &response_dec;

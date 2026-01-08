@@ -8,8 +8,8 @@ static long long current_time_ms() {
 
 ggml_status
 apir_backend_graph_compute(struct virtgpu *gpu, ggml_cgraph *cgraph) {
-    struct vn_cs_encoder *encoder;
-    struct vn_cs_decoder *decoder;
+    struct apir_encoder *encoder;
+    struct apir_decoder *decoder;
     ApirForwardReturnCode ret;
 
     REMOTE_CALL_PREPARE(gpu, encoder, APIR_COMMAND_TYPE_BACKEND_GRAPH_COMPUTE);
@@ -27,19 +27,19 @@ apir_backend_graph_compute(struct virtgpu *gpu, ggml_cgraph *cgraph) {
 	FATAL("Couldn't allocate the guest-host shared buffer :/");
     }
 
-    vn_encode_virtgpu_shmem_res_id(encoder, shmem->res_id);
+    apir_encode_virtgpu_shmem_res_id(encoder, shmem->res_id);
 
-    vn_encode_size_t(encoder, &cgraph_size);
+    apir_encode_size_t(encoder, &cgraph_size);
 
     char *shmem_data = (char *) shmem->mmap_ptr;
-    struct vn_cs_encoder secondary_enc = vn_cs_new_encoder(shmem_data, cgraph_size);
+    struct apir_encoder secondary_enc = apir_new_encoder(shmem_data, cgraph_size);
 
-    vn_encode_cgraph_data(&secondary_enc, cgraph_data);
+    apir_encode_cgraph_data(&secondary_enc, cgraph_data);
 
     REMOTE_CALL(gpu, encoder, decoder, ret);
 
     ggml_status status = GGML_STATUS_ABORTED;
-    vn_decode_ggml_status(decoder, &status);
+    apir_decode_ggml_status(decoder, &status);
     //INFO("Received status %u", status);
 
     remote_call_finish(gpu, encoder, decoder);

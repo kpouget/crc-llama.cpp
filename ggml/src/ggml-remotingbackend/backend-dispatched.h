@@ -11,7 +11,7 @@
 #include "shared/venus_cs.h"
 #include "shared/venus_cs_ggml.h"
 
-typedef uint32_t (*backend_dispatch_t)(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx);
+typedef uint32_t (*backend_dispatch_t)(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx);
 
 #include "backend-dispatched.gen.h"
 

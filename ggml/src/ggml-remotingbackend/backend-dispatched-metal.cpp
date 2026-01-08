@@ -12,7 +12,7 @@ void (*ggml_backend_metal_get_device_context_fct)(ggml_backend_dev_t dev,
 						  bool *has_bfloat) = NULL;
 
 uint32_t
-backend_metal_get_device_context(struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx) {
+backend_metal_get_device_context(struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx) {
   UNUSED(ctx);
   UNUSED(dec);
 
@@ -33,9 +33,9 @@ backend_metal_get_device_context(struct vn_cs_encoder *enc, struct vn_cs_decoder
     ret = 1;
   }
 
-  vn_encode_bool_t(enc, &has_simdgroup_mm);
-  vn_encode_bool_t(enc, &has_simdgroup_reduction);
-  vn_encode_bool_t(enc, &has_bfloat);
+  apir_encode_bool_t(enc, &has_simdgroup_mm);
+  apir_encode_bool_t(enc, &has_simdgroup_reduction);
+  apir_encode_bool_t(enc, &has_bfloat);
 
   return ret;
 }

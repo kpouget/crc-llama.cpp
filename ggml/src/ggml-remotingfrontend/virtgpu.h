@@ -88,20 +88,20 @@ virtgpu_ioctl(struct virtgpu *gpu, unsigned long request, void *args)
 
 struct virtgpu *create_virtgpu();
 
-struct vn_cs_encoder *remote_call_prepare(
+struct apir_encoder *remote_call_prepare(
     struct virtgpu *gpu,
     ApirCommandType apir_cmd_type,
     int32_t cmd_flags);
 
 uint32_t remote_call(
     struct virtgpu *gpu,
-    struct vn_cs_encoder *enc,
-    struct vn_cs_decoder **dec,
+    struct apir_encoder *enc,
+    struct apir_decoder **dec,
     float max_wait_ms,
     long long *call_duration_ns
     );
 
 void remote_call_finish(
     struct virtgpu *gpu,
-    struct vn_cs_encoder *enc,
-    struct vn_cs_decoder *dec);
+    struct apir_encoder *enc,
+    struct apir_decoder *dec);
