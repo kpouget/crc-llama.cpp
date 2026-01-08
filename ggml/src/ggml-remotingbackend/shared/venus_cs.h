@@ -161,16 +161,6 @@ apir_decode_uint8_t(struct apir_decoder *dec, uint8_t *val)
 
 /* uint64_t */
 
-static inline size_t
-vn_sizeof_uint64_t(const uint64_t *val)
-{
-  assert(sizeof(*val) == 8);
-#ifdef NDEBUG
-  UNUSED(val);
-#endif
-  return 8;
-}
-
 static inline void
 apir_encode_uint64_t(struct apir_encoder *enc, const uint64_t *val)
 {
@@ -181,15 +171,6 @@ static inline void
 apir_decode_uint64_t(struct apir_decoder *dec, uint64_t *val)
 {
   apir_decode(dec, 8, val, sizeof(*val));
-}
-
-static inline size_t
-vn_sizeof_uint64_t_array(const uint64_t *val, uint32_t count)
-{
-  assert(sizeof(*val) == 8);
-  const size_t size = sizeof(*val) * count;
-  assert(size >= count);
-  return size;
 }
 
 static inline void
@@ -216,16 +197,6 @@ apir_decode_uint64_t_array_inplace(struct apir_decoder *dec, uint32_t count)
 
 /* int32_t */
 
-static inline size_t
-vn_sizeof_int32_t(const int32_t *val)
-{
-  assert(sizeof(*val) == 4);
-#ifdef NDEBUG
-  UNUSED(val);
-#endif
-  return 4;
-}
-
 static inline void
 apir_encode_int32_t(struct apir_encoder *enc, const int32_t *val)
 {
@@ -236,15 +207,6 @@ static inline void
 apir_decode_int32_t(struct apir_decoder *dec, int32_t *val)
 {
   apir_decode(dec, 4, val, sizeof(*val));
-}
-
-static inline size_t
-vn_sizeof_int32_t_array(const int32_t *val, uint32_t count)
-{
-  assert(sizeof(*val) == 4);
-  const size_t size = sizeof(*val) * count;
-  assert(size >= count);
-  return size;
 }
 
 static inline void
@@ -265,12 +227,6 @@ apir_decode_int32_t_array(struct apir_decoder *dec, int32_t *val, uint32_t count
 
 /* array size (uint64_t) */
 
-static inline size_t
-vn_sizeof_array_size(uint64_t size)
-{
-  return vn_sizeof_uint64_t(&size);
-}
-
 static inline void
 apir_encode_array_size(struct apir_encoder *enc, uint64_t size)
 {
@@ -284,7 +240,6 @@ apir_decode_array_size(struct apir_decoder *dec, uint64_t expected_size)
   apir_decode_uint64_t(dec, &size);
   if (size != expected_size) {
     FATAL("ENCODER IS FULL :/");
-    //apir_decoder_set_fatal(dec);
     size = 0;
   }
   return size;
@@ -298,21 +253,7 @@ apir_decode_array_size_unchecked(struct apir_decoder *dec)
   return size;
 }
 
-static inline uint64_t
-vn_peek_array_size(struct apir_decoder *dec)
-{
-  uint64_t size;
-  apir_decoder_peek(dec, sizeof(size), &size, sizeof(size));
-  return size;
-}
-
 /* non-array pointer */
-
-static inline size_t
-vn_sizeof_simple_pointer(const void *val)
-{
-  return vn_sizeof_array_size(val ? 1 : 0);
-}
 
 static inline bool
 apir_encode_simple_pointer(struct apir_encoder *enc, const void *val)
@@ -329,16 +270,6 @@ apir_decode_simple_pointer(struct apir_decoder *dec)
 
 /* uint32_t */
 
-static inline size_t
-vn_sizeof_uint32_t(const uint32_t *val)
-{
-  assert(sizeof(*val) == 4);
-#ifdef NDEBUG
-  UNUSED(val);
-#endif
-  return 4;
-}
-
 static inline void
 apir_encode_uint32_t(struct apir_encoder *enc, const uint32_t *val)
 {
@@ -349,15 +280,6 @@ static inline void
 apir_decode_uint32_t(struct apir_decoder *dec, uint32_t *val)
 {
   apir_decode(dec, 4, val, sizeof(*val));
-}
-
-static inline size_t
-vn_sizeof_uint32_t_array(const uint32_t *val, uint32_t count)
-{
-  assert(sizeof(*val) == 4);
-  const size_t size = sizeof(*val) * count;
-  assert(size >= count);
-  return size;
 }
 
 static inline void
@@ -378,12 +300,6 @@ apir_decode_uint32_t_array(struct apir_decoder *dec, uint32_t *val, uint32_t cou
 
 /* size_t */
 
-static inline size_t
-vn_sizeof_size_t(const size_t *val)
-{
-    return sizeof(*val);
-}
-
 static inline void
 apir_encode_size_t(struct apir_encoder *enc, const size_t *val)
 {
@@ -397,12 +313,6 @@ apir_decode_size_t(struct apir_decoder *dec, size_t *val)
     uint64_t tmp;
     apir_decode_uint64_t(dec, &tmp);
     *val = tmp;
-}
-
-static inline size_t
-vn_sizeof_size_t_array(const size_t *val, uint32_t count)
-{
-    return vn_sizeof_size_t(val) * count;
 }
 
 static inline void
@@ -429,13 +339,6 @@ apir_decode_size_t_array(struct apir_decoder *dec, size_t *val, uint32_t count)
 
 /* opaque blob */
 
-static inline size_t
-vn_sizeof_blob_array(const void *val, size_t size)
-{
-  UNUSED(val);
-  return (size + 3) & ~3;
-}
-
 static inline void
 apir_encode_blob_array(struct apir_encoder *enc, const void *val, size_t size)
 {
@@ -449,12 +352,6 @@ apir_decode_blob_array(struct apir_decoder *dec, void *val, size_t size)
 }
 
 /* string */
-
-static inline size_t
-vn_sizeof_char_array(const char *val, size_t size)
-{
-  return vn_sizeof_blob_array(val, size);
-}
 
 static inline void
 apir_encode_char_array(struct apir_encoder *enc, const char *val, size_t size)
@@ -478,7 +375,7 @@ apir_decode_char_array(struct apir_decoder *dec, char *val, size_t size)
 /* (temp) buffer allocation */
 
 static inline void *
-vkr_cs_decoder_alloc_array(struct vkr_cs_decoder *dec, size_t size, size_t count)
+_apir_decoder_alloc_array(struct apir_decoder *dec, size_t size, size_t count)
 {
   UNUSED(dec);
   size_t alloc_size;
@@ -493,8 +390,8 @@ vkr_cs_decoder_alloc_array(struct vkr_cs_decoder *dec, size_t size, size_t count
 static inline void *
 apir_decoder_alloc_array(struct apir_decoder *dec, size_t size, size_t count)
 {
-  struct vkr_cs_decoder *d = (struct vkr_cs_decoder *)dec;
-  return vkr_cs_decoder_alloc_array(d, size, count);
+  struct apir_decoder *d = (struct apir_decoder *)dec;
+  return _apir_decoder_alloc_array(d, size, count);
 }
 
 /* bool */

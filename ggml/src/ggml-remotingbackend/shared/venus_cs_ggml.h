@@ -138,7 +138,7 @@ apir_decode_virtgpu_shmem_res_id(struct apir_decoder *dec, uint32_t *shmem_res_i
 /* ggml_cgraph */
 
 static inline size_t
-vn_serialize_ggml_cgraph(ggml_cgraph *cgraph, std::vector<uint8_t> & cgraph_data) {
+apir_serialize_ggml_cgraph(ggml_cgraph *cgraph, std::vector<uint8_t> & cgraph_data) {
   serialize_graph(cgraph, cgraph_data);
 
   return cgraph_data.size();

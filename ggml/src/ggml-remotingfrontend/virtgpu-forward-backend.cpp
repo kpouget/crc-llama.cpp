@@ -15,7 +15,7 @@ apir_backend_graph_compute(struct virtgpu *gpu, ggml_cgraph *cgraph) {
     REMOTE_CALL_PREPARE(gpu, encoder, APIR_COMMAND_TYPE_BACKEND_GRAPH_COMPUTE);
 
     std::vector<uint8_t> cgraph_data;
-    size_t cgraph_size = vn_serialize_ggml_cgraph(cgraph, cgraph_data);
+    size_t cgraph_size = apir_serialize_ggml_cgraph(cgraph, cgraph_data);
 
     struct virtgpu_shmem temp_shmem;  // Local storage for large buffers
     struct virtgpu_shmem *shmem = &temp_shmem;
