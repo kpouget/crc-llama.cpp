@@ -18,6 +18,7 @@
 
 #define VIRGL_RENDERER_UNSTABLE_APIS 1
 #include "drm-uapi/virtgpu_drm.h"
+#include "apir_hw.h"
 #include "venus_hw.h"
 
 // must match https://gitlab.freedesktop.org/kpouget/virglrenderer/-/blob/main/src/virglrenderer_hw.h?ref_type=heads
@@ -28,6 +29,8 @@ enum virgl_renderer_capset {
     VIRGL_RENDERER_CAPSET_VENUS                   = 4,
     /* 5 is reserved for cross-domain */
     VIRGL_RENDERER_CAPSET_DRM                     = 6,
+
+    VIRGL_RENDERER_CAPSET_APIR                    = 10,
 };
 
 /* from src/virtio/vulkan/vn_renderer_virtgpu.c */
@@ -59,12 +62,14 @@ struct virtgpu_shmem {
 struct virtgpu {
     struct remoting_dev_instance *instance;
 
+    bool use_apir_capset;
+
     int fd;
 
     struct {
         enum virgl_renderer_capset id;
         uint32_t version;
-        struct virgl_renderer_capset_apir data;
+	struct virgl_renderer_capset_apir data;
     } capset;
 
     struct util_sparse_array shmem_array;

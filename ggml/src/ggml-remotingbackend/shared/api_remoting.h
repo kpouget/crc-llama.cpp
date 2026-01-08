@@ -4,8 +4,6 @@
 
 #include <unistd.h>
 
-#define VENUS_COMMAND_TYPE_LENGTH 331
-
 #define APIR_PROTOCOL_MAJOR 0
 #define APIR_PROTOCOL_MINOR 1
 

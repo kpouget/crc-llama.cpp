@@ -159,25 +159,24 @@ struct virtgpu *
 create_virtgpu() {
     struct virtgpu *gpu = new struct virtgpu();
 
-    util_sparse_array_init(&gpu->shmem_array, sizeof(struct virtgpu_shmem),
-                           1024);
+    gpu->use_apir_capset = getenv("GGML_REMOTING_USE_APIR_CAPSET") != nullptr;
 
-    virt_gpu_result_t result = virtgpu_open(gpu);
-    if (result != APIR_SUCCESS) {
+    util_sparse_array_init(&gpu->shmem_array, sizeof(struct virtgpu_shmem), 1024);
+
+    if (virtgpu_open(gpu) != APIR_SUCCESS) {
         FATAL("%s: failed to open the virtgpu device :/", __func__);
         return NULL;
     }
 
-    result = virtgpu_init_capset(gpu);
-    assert(result == APIR_SUCCESS);
-    assert(gpu->capset.data.supports_blob_resources);
+    if (virtgpu_init_capset(gpu) != APIR_SUCCESS) {
+	FATAL("%s: failed to initialize the GPU capset :/", __func__);
+	return NULL;
+    }
 
-    result = virtgpu_init_context(gpu);
-    assert(result == APIR_SUCCESS);
-
-#ifdef NDEBUG
-    UNUSED(result);
-#endif
+    if (virtgpu_init_context(gpu) != APIR_SUCCESS) {
+	FATAL("%s: failed to initialize the GPU context :/", __func__);
+	return NULL;
+    }
 
     if (virtgpu_shmem_create(gpu, SHMEM_REPLY_SIZE, &gpu->reply_shmem)) {
         FATAL("%s: failed to create the shared reply memory pages :/", __func__);
@@ -276,16 +275,25 @@ virtgpu_init_context(struct virtgpu *gpu)
 static virt_gpu_result_t
 virtgpu_init_capset(struct virtgpu *gpu)
 {
-    gpu->capset.id = VIRGL_RENDERER_CAPSET_APIR;
+    if (gpu->use_apir_capset) {
+	MESSAGE("Using the APIR capset");
+	gpu->capset.id = VIRGL_RENDERER_CAPSET_APIR;
+    } else {
+	MESSAGE("Using the Venus capset");
+	gpu->capset.id = VIRGL_RENDERER_CAPSET_VENUS;
+    }
     gpu->capset.version = 0;
 
-    const int ret =
-        virtgpu_ioctl_get_caps(gpu, gpu->capset.id, gpu->capset.version,
-                               &gpu->capset.data, sizeof(gpu->capset.data));
+    int ret = \
+	virtgpu_ioctl_get_caps(gpu, gpu->capset.id, gpu->capset.version,
+			       &gpu->capset.data, sizeof(gpu->capset.data));
+
     if (ret) {
         MESSAGE("failed to get APIR v%d capset: %s", gpu->capset.version, strerror(errno));
         return APIR_ERROR_INITIALIZATION_FAILED;
     }
+
+    assert(gpu->capset.data.supports_blob_resources);
 
     return APIR_SUCCESS;
 }
@@ -375,9 +383,9 @@ remote_call_prepare(
      * - cmd_type (int32_t)
      * - cmd_flags (int32_t)
      * - reply res id (uint32_t)
-     */
+   */
 
-    int32_t cmd_type = VENUS_COMMAND_TYPE_LENGTH + apir_cmd_type;
+    int32_t cmd_type = apir_cmd_type;
     vn_encode_int32_t(&enc, &cmd_type);
     vn_encode_int32_t(&enc, &cmd_flags);
 
