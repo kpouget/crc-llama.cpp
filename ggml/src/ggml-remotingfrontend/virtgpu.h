@@ -22,12 +22,12 @@
 
 // must match https://gitlab.freedesktop.org/kpouget/virglrenderer/-/blob/main/src/virglrenderer_hw.h?ref_type=heads
 enum virgl_renderer_capset {
-  VIRGL_RENDERER_CAPSET_VIRGL                   = 1,
-  VIRGL_RENDERER_CAPSET_VIRGL2                  = 2,
-  /* 3 is reserved for gfxstream */
-  VIRGL_RENDERER_CAPSET_VENUS                   = 4,
-  /* 5 is reserved for cross-domain */
-  VIRGL_RENDERER_CAPSET_DRM                     = 6,
+    VIRGL_RENDERER_CAPSET_VIRGL                   = 1,
+    VIRGL_RENDERER_CAPSET_VIRGL2                  = 2,
+    /* 3 is reserved for gfxstream */
+    VIRGL_RENDERER_CAPSET_VENUS                   = 4,
+    /* 5 is reserved for cross-domain */
+    VIRGL_RENDERER_CAPSET_DRM                     = 6,
 };
 
 /* from src/virtio/vulkan/vn_renderer_virtgpu.c */
@@ -42,61 +42,61 @@ enum virgl_renderer_capset {
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef enum virt_gpu_result_t {
-  APIR_SUCCESS = 0,
-  APIR_ERROR_INITIALIZATION_FAILED = -1,
+    APIR_SUCCESS = 0,
+    APIR_ERROR_INITIALIZATION_FAILED = -1,
 } virt_gpu_result_t;
 
 struct virtgpu_shmem {
-   uint32_t res_id;
-   size_t mmap_size;
-   void *mmap_ptr;
+    uint32_t res_id;
+    size_t mmap_size;
+    void *mmap_ptr;
 
-   uint32_t gem_handle;
+    uint32_t gem_handle;
 };
 
 #define PRINTFLIKE(f, a) __attribute__ ((format(__printf__, f, a)))
 
 struct virtgpu {
-  struct remoting_dev_instance *instance;
+    struct remoting_dev_instance *instance;
 
-  int fd;
+    int fd;
 
-  struct {
-    enum virgl_renderer_capset id;
-    uint32_t version;
-    struct virgl_renderer_capset_apir data;
-  } capset;
+    struct {
+        enum virgl_renderer_capset id;
+        uint32_t version;
+        struct virgl_renderer_capset_apir data;
+    } capset;
 
-  struct util_sparse_array shmem_array;
+    struct util_sparse_array shmem_array;
 
-  /* APIR communication pages */
-  struct virtgpu_shmem reply_shmem;
-  struct virtgpu_shmem data_shmem;
+    /* APIR communication pages */
+    struct virtgpu_shmem reply_shmem;
+    struct virtgpu_shmem data_shmem;
 };
 
 
 static inline int
 virtgpu_ioctl(struct virtgpu *gpu, unsigned long request, void *args)
 {
-  return drmIoctl(gpu->fd, request, args);
+    return drmIoctl(gpu->fd, request, args);
 }
 
 struct virtgpu *create_virtgpu();
 
 struct vn_cs_encoder *remote_call_prepare(
-  struct virtgpu *gpu,
-  ApirCommandType apir_cmd_type,
-  int32_t cmd_flags);
+    struct virtgpu *gpu,
+    ApirCommandType apir_cmd_type,
+    int32_t cmd_flags);
 
 uint32_t remote_call(
-  struct virtgpu *gpu,
-  struct vn_cs_encoder *enc,
-  struct vn_cs_decoder **dec,
-  float max_wait_ms,
-  long long *call_duration_ns
-);
+    struct virtgpu *gpu,
+    struct vn_cs_encoder *enc,
+    struct vn_cs_decoder **dec,
+    float max_wait_ms,
+    long long *call_duration_ns
+    );
 
 void remote_call_finish(
-  struct virtgpu *gpu,
-  struct vn_cs_encoder *enc,
-  struct vn_cs_decoder *dec);
+    struct virtgpu *gpu,
+    struct vn_cs_encoder *enc,
+    struct vn_cs_decoder *dec);
