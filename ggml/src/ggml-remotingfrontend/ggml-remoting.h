@@ -34,12 +34,6 @@
 #define BUFT_TO_GPU(name) \
   ((struct ggml_backend_remoting_device_context *) (name)->device->context)->gpu
 
-static inline apir_buffer_type_host_handle_t
-ggml_buffer_type_to_apir_handle(ggml_backend_buffer_type_t buft) {
-  // in the backend, the buffer handle is the buffer pointer
-  return (apir_buffer_type_host_handle_t) buft->context;
-}
-
 struct ggml_backend_remoting_device_context {
   size_t device;
   std::string name;
@@ -70,23 +64,11 @@ ggml_backend_dev_t ggml_backend_remoting_get_device(size_t device);
 ggml_backend_t ggml_backend_remoting_device_init(ggml_backend_dev_t dev, const char * params);
 ggml_backend_buffer_type_t ggml_backend_remoting_device_get_buffer_type(ggml_backend_dev_t dev);
 
-struct remoting_buffer_struct;
-typedef std::shared_ptr<remoting_buffer_struct> remoting_buffer;
-typedef std::weak_ptr<remoting_buffer_struct> remoting_buffer_ref;
-
-void ggml_remoting_destroy_buffer(remoting_buffer& buf);
-
-struct remoting_device_struct;
-typedef std::shared_ptr<remoting_device_struct> remoting_device;
-typedef std::weak_ptr<remoting_device_struct> remoting_device_ref;
-
-// TO REMOVE
-
-struct remoting_context_struct {
-  int i;
-};
-typedef std::shared_ptr<remoting_context_struct> remoting_context;
-typedef std::weak_ptr<remoting_context_struct> remoting_context_ref;
+static inline apir_buffer_type_host_handle_t
+ggml_buffer_type_to_apir_handle(ggml_backend_buffer_type_t buft) {
+  // in the backend, the buffer handle is the buffer pointer
+  return (apir_buffer_type_host_handle_t) buft->context;
+}
 
 static inline apir_buffer_host_handle_t ggml_buffer_to_apir_handle(ggml_backend_buffer_t buffer) {
   return BUFFER_TO_HOST_HANDLE(buffer);
