@@ -136,17 +136,6 @@ ggml_backend_remoting_device_buffer_from_ptr(ggml_backend_dev_t dev, void * ptr,
     return buffer;
 }
 
-static ggml_backend_buffer_type_t
-ggml_backend_remoting_device_get_host_buffer_type(ggml_backend_dev_t dev) {
-    static struct ggml_backend_buffer_type host_bufft = {
-        /* .iface    = */ ggml_backend_remoting_host_buffer_type_interface,
-        /* .device   = */ dev,
-        /* .context  = */ nullptr,
-    };
-
-    return &host_bufft;
-}
-
 const struct ggml_backend_device_i ggml_backend_remoting_device_interface = {
     /* .get_name             = */ ggml_backend_remoting_device_get_name,
     /* .get_description      = */ ggml_backend_remoting_device_get_description,

@@ -57,19 +57,16 @@ struct ggml_backend_remoting_buffer_context {
 
   void *base;
 
-  bool is_host_buffer;
   bool is_from_ptr;
 };
 
 extern const ggml_backend_buffer_type_i ggml_backend_remoting_buffer_type_interface;
 extern const struct ggml_backend_device_i ggml_backend_remoting_device_interface;
-extern const ggml_backend_buffer_type_i ggml_backend_remoting_host_buffer_type_interface;
 extern const ggml_backend_buffer_i ggml_backend_remoting_buffer_interface;
 extern const ggml_backend_buffer_type_i ggml_backend_remoting_buffer_from_ptr_type_interface;
 extern const ggml_backend_buffer_i ggml_backend_remoting_buffer_from_ptr_interface;
 
 ggml_backend_dev_t ggml_backend_remoting_get_device(size_t device);
-ggml_backend_buffer_type_t ggml_backend_remoting_host_buffer_type();
 ggml_backend_t ggml_backend_remoting_device_init(ggml_backend_dev_t dev, const char * params);
 ggml_backend_buffer_type_t ggml_backend_remoting_device_get_buffer_type(ggml_backend_dev_t dev);
 
