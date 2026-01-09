@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 
-#include "virtgpu-forward.h"
+#include "virtgpu-apir.h"
 #include "virtgpu-utils.h"
 #include "../ggml-remotingbackend/shared/api_remoting.h"
 #include "../ggml-remotingbackend/shared/apir_cs.h"

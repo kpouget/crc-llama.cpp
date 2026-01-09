@@ -177,7 +177,7 @@ static const backend_dispatch_t apir_backend_dispatch_table[APIR_BACKEND_DISPATC
         return header_content
 
     def generate_virtgpu_forward_header(self) -> str:
-        """Generate the complete virtgpu-forward.h file."""
+        """Generate the complete virtgpu-forward.gen.h file."""
         functions = self.get_enabled_functions()
 
         decl_lines = []

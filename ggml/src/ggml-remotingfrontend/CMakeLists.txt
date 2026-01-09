@@ -12,7 +12,7 @@ ggml_add_backend_library(ggml-remotingfrontend
                          ggml-backend-device.cpp
                          ggml-backend-reg.cpp
                          ggml-backend-buffer-type.cpp
-                         virtgpu-forward.h
+                         virtgpu-apir.h
                          virtgpu-forward.gen.h
                          virtgpu.cpp
                          virtgpu-shm.cpp
@@ -22,8 +22,8 @@ ggml_add_backend_library(ggml-remotingfrontend
                          virtgpu-forward-buffer.cpp
                          virtgpu-forward-backend.cpp
                          virtgpu-forward-impl.h
-                         ../../include/ggml-remoting-frontend.h
                          apir_cs_ggml-rpc-front.cpp
+                         ../../include/ggml-remoting-frontend.h
                         )
 
   # Debug: Show what pkg-config found
