@@ -126,7 +126,7 @@ class RemotingCodebaseGenerator:
                 current_group = func['group_name']
 
             signature = "uint32_t"
-            params = "struct vn_cs_encoder *enc, struct vn_cs_decoder *dec, struct virgl_apir_context *ctx"
+            params = "struct apir_encoder *enc, struct apir_decoder *dec, struct virgl_apir_context *ctx"
             decl_lines.append(f"{signature} {func['backend_function']}({params});")
 
         # Switch cases
